@@ -1,0 +1,28 @@
+{
+  "name": "@luispittagros/nuxt-ssr-redis-cache",
+  "version": "1.0.3",
+  "description": "Blazing Fast SSR page renderings using Redis.",
+  "main": "src/cache.js",
+  "author": "Luís Pitta Grós",
+  "license": "MIT",
+  "dependencies": {
+    "redis": "^4.1.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luispittagros/nuxt-ssr-redis-cache.git"
+  },
+  "keywords": [
+    "Nuxt",
+    "SSR",
+    "Redis",
+    "Cache",
+    "Page",
+    "Fast"
+  ],
+  "bugs": {
+    "url": "https://github.com/luispittagros/nuxt-ssr-redis-cache/issues"
+  },
+  "homepage": "https://github.com/luispittagros/nuxt-ssr-redis-cache#readme"
+}
