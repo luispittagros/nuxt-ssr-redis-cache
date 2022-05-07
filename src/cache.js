@@ -2,7 +2,7 @@ const { createClient } = require('redis')
 const { serialize, deserialize } = require('./serialize')
 
 export default async function nuxtRedisCache(moduleOptions) {
-  const nuxtModuleOptions = Object.assign({}, this.options.redisPageCache, moduleOptions)
+  const nuxtModuleOptions = Object.assign({}, this.options.ssrRedisCache, moduleOptions)
   const options = buildOptions(nuxtModuleOptions)
 
   const client = createClient(options.client)
