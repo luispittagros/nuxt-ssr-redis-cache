@@ -18,7 +18,7 @@ modules: [
       '@luispittagros/nuxt-ssr-redis-cache',
       {
         enabled: true,
-        expireTime: 60 * 60,
+        ttl: 60 * 60,
         client: {
           socket: {
             host:  '127.0.0.1',
@@ -26,7 +26,7 @@ modules: [
           },
           password: null,
         },
-        matches: [/^\/$/, '/articles/'],
+        paths: [/^\/$/, '/articles/'],
         cacheCleanEndpoint: {
           enabled: false, 
           path: '/ssr-redis-cache',
@@ -43,7 +43,7 @@ or
   modules: ['@luispittagros/nuxt-ssr-redis-cache'],
   ssrRedisCache: {
     enabled: true,
-    expireTime: 60 * 60,
+    ttl: 60 * 60,
     client: {
       socket: {
         host: '127.0.0.1',
@@ -51,7 +51,7 @@ or
       },
       password: null,
     },
-    matches: [/^\/$/, '/articles/'],
+    paths: [/^\/$/, '/articles/'],
     cacheCleanEndpoint: {
       enabled: true, 
       path: '/ssr-redis-cache',

@@ -8,7 +8,7 @@ function ssrRedisCacheMiddleware(redisClient, options = {}) {
   app.use(json())
   app.use(cors(options.cors || {}))
 
-  app.post(options.path || '/ssr-redis-cache', async (req, res) => {
+  app.post('/', async (req, res) => {
     const { paths = [] } = req.body
 
     if (!paths.length) {

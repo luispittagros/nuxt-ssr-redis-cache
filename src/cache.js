@@ -30,7 +30,7 @@ export default async function nuxtRedisCache(moduleOptions) {
     const isCacheCleanEndpointEnabled = options.cacheCleanEndpoint && options.cacheCleanEndpoint.enabled !== false
   
     if (isCacheCleanEndpointEnabled) {
-      this.addServerMiddleware(ssrRedisCacheMiddleware(client, options.cacheCleanEndpoint))
+      this.addServerMiddleware({ path: options.cacheCleanEndpoint.path || '/ssr-redis-cache', handler: ssrRedisCacheMiddleware(client, options.cacheCleanEndpoint)})
     }
     
     console.log('[Nuxt SSR Redis Cache]:', 'Cache clean endpoint is ' + (isCacheCleanEndpointEnabled ? 'enabled\x1b[32m ✔' : 'disabled\x1b[31m ✘') + '\n')
@@ -41,7 +41,7 @@ export default async function nuxtRedisCache(moduleOptions) {
 
     renderer.renderRoute = async function (route, context) {
       // Check if the route is cacheable, if not, just render the route (cache-control: no-cache is set when the browser cache is disabled)
-      if (!isCacheable(route, options.matches, context.req.headers['cache-control'])) {
+      if (!isCacheable(route, options.paths, context.req.headers['cache-control'])) {
         return renderRoute(route, context)
       }
 
@@ -72,9 +72,9 @@ export default async function nuxtRedisCache(moduleOptions) {
       context.res.setHeader('X-Cache', hitCache ? 'HIT' : 'MISS')
     }
 
-    if (!hitCache && isCacheable(url, options.matches)) {
+    if (!hitCache && isCacheable(url, options.paths)) {
       client.set('nuxt/route::' + url, serialize(result), {
-        EX: options.expireTime,
+        EX: options.ttl,
       })
     }
   })
@@ -90,8 +90,8 @@ function buildOptions(moduleOptions) {
       },
       password: null,
     },
-    expireTime: 60 * 60,
-    matches: [],
+    ttl: 60 * 60,
+    paths: [],
     cacheCleanEndpoint: {
       enabled: false, 
       path: '/ssr-redis-cache',
@@ -102,8 +102,8 @@ function buildOptions(moduleOptions) {
   return Object.assign({}, defaultOptions, moduleOptions)
 }
 
-function isCacheable(url, matches = [], cacheControl = null) {
-  return cacheControl !== 'no-cache' && matches.some((path) => (path instanceof RegExp ? path.test(url) : url.startsWith(path)))
+function isCacheable(url, paths = [], cacheControl = null) {
+  return cacheControl !== 'no-cache' && paths.some((path) => (path instanceof RegExp ? path.test(url) : url.startsWith(path)))
 }
 
 module.exports.meta = require('../package.json')
