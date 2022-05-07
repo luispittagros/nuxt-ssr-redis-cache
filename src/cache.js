@@ -1,5 +1,6 @@
 const { createClient } = require('redis')
 const { serialize, deserialize } = require('./serialize')
+const ssrRedisCacheMiddleware = require('./serverMiddleware')
 
 export default async function nuxtRedisCache(moduleOptions) {
   const nuxtModuleOptions = Object.assign({}, this.options.ssrRedisCache, moduleOptions)
@@ -8,24 +9,31 @@ export default async function nuxtRedisCache(moduleOptions) {
   const client = createClient(options.client)
 
   client.on('error', function (error) {
-    console.log('\x1b[31m%s\x1b[0m', '[Nuxt SSR Redis Cache]: Error: ' + error)
+    console.log('\n\x1b[31m%s\x1b[0m', '[Nuxt SSR Redis Cache]: Error: ' + error)
   })
 
-  this.nuxt.hook('ready', async (nuxt) => {
-    console.log('')
-    console.log('[Nuxt SSR Redis Cache]:', options.enabled ? 'Enabled\x1b[32m ✔' : 'Disabled')
+  console.log('\n[Nuxt SSR Redis Cache]:', options.enabled ? 'Enabled \x1b[32m✔' : 'Disabled \x1b[31m✘')
 
-    if (!options.enabled) return
+  if (!options.enabled) return
 
-    console.log('\x1b[34m%s\x1b[0m', '[Nuxt SSR Redis Cache]: Connecting to Redis...')
+  console.log('\x1b[34m%s\x1b[0m', '[Nuxt SSR Redis Cache]: Connecting to Redis...')
 
-    try {
-      await client.connect()
-    } catch (error) {
-      console.log('\x1b[31m%s\x1b[0m', '[Nuxt SSR Redis Cache]: Unable to connect to Redis: ' + e)
+  try {
+    await client.connect()
+  } catch (error) {
+    console.log('\x1b[31m%s\x1b[0m', '[Nuxt SSR Redis Cache]: Unable to connect to Redis: ' + error)
+  }
+
+  console.log('\x1b[32m%s\x1b[0m', '[Nuxt SSR Redis Cache]: Connected to Redis!')
+
+  this.nuxt.hook('render:setupMiddleware', () => {
+    const isCacheCleanEndpointEnabled = options.cacheCleanEndpoint && options.cacheCleanEndpoint.enabled !== false
+  
+    if (isCacheCleanEndpointEnabled) {
+      this.addServerMiddleware(ssrRedisCacheMiddleware(client, options.cacheCleanEndpoint))
     }
-
-    console.log('\x1b[32m%s\x1b[0m', '[Nuxt SSR Redis Cache]: Connected to Redis!')
+    
+    console.log('[Nuxt SSR Redis Cache]:', 'Cache clean endpoint is ' + (isCacheCleanEndpointEnabled ? 'enabled\x1b[32m ✔' : 'disabled\x1b[31m ✘') + '\n')
   })
 
   this.nuxt.hook('render:before', async (renderer) => {
@@ -84,6 +92,11 @@ function buildOptions(moduleOptions) {
     },
     expireTime: 60 * 60,
     matches: [],
+    cacheCleanEndpoint: {
+      enabled: false, 
+      path: '/ssr-redis-cache',
+      cors: true,
+    }
   }
 
   return Object.assign({}, defaultOptions, moduleOptions)
