@@ -84,4 +84,4 @@ For the CORS options check the express cors middleware options [here](https://ex
 
 ### Cached Pages
 
-Cacheable/Cached pages have the HTTP response header "X-Cache" which have the value "HIT" or "MISS" accordingly.
+Cacheable/Cached pages have the HTTP response header "X-Cache" which has the value "HIT" or "MISS" accordingly.
