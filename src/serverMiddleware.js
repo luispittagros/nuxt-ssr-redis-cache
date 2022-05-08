@@ -2,7 +2,7 @@ const express = require('express')
 const { json } = require('body-parser')
 const cors = require('cors')
 
-function ssrRedisCacheMiddleware(redisClient, options = {}) {
+function ssrRedisCacheMiddleware(client, options = {}) {
   const app = express()
 
   app.use(json())
@@ -16,7 +16,12 @@ function ssrRedisCacheMiddleware(redisClient, options = {}) {
     }
 
     try {
-      await Promise.all(paths.map((path) => redisClient.del('nuxt/route::' + path)))
+      if (paths.length === 1 && paths[0] === '*') {
+        const { keys = [] } = await client.scan(0, { MATCH: 'nuxt/route::*' });
+        await Promise.all(keys.map((path) => client.del(path)))
+      } else {
+        await Promise.all(paths.map((path) => client.del('nuxt/route::' + path)))
+      }
 
       return res.status(200).json({ success: true })
     } catch (error) {

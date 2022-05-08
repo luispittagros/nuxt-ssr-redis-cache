@@ -28,12 +28,18 @@ export default async function nuxtRedisCache(moduleOptions) {
 
   this.nuxt.hook('render:setupMiddleware', () => {
     const isCacheCleanEndpointEnabled = options.cacheCleanEndpoint && options.cacheCleanEndpoint.enabled !== false
-  
+
     if (isCacheCleanEndpointEnabled) {
-      this.addServerMiddleware({ path: options.cacheCleanEndpoint.path || '/ssr-redis-cache', handler: ssrRedisCacheMiddleware(client, options.cacheCleanEndpoint)})
+      this.addServerMiddleware({
+        path: options.cacheCleanEndpoint.path || '/ssr-redis-cache',
+        handler: ssrRedisCacheMiddleware(client, options.cacheCleanEndpoint),
+      })
     }
-    
-    console.log('[Nuxt SSR Redis Cache]:', 'Cache clean endpoint is ' + (isCacheCleanEndpointEnabled ? 'enabled\x1b[32m ✔' : 'disabled\x1b[31m ✘') + '\n')
+
+    console.log(
+      '[Nuxt SSR Redis Cache]:',
+      'Cache clean endpoint is ' + (isCacheCleanEndpointEnabled ? 'enabled\x1b[32m ✔' : 'disabled\x1b[31m ✘') + '\n',
+    )
   })
 
   this.nuxt.hook('render:before', async (renderer) => {
@@ -72,7 +78,7 @@ export default async function nuxtRedisCache(moduleOptions) {
       context.res.setHeader('X-Cache', hitCache ? 'HIT' : 'MISS')
     }
 
-    if (!hitCache && isCacheable(url, options.paths)) {
+    if (!hitCache && isCacheable(url, options.paths, context.req.headers['cache-control'])) {
       client.set('nuxt/route::' + url, serialize(result), {
         EX: options.ttl,
       })
@@ -93,17 +99,19 @@ function buildOptions(moduleOptions) {
     ttl: 60 * 60,
     paths: [],
     cacheCleanEndpoint: {
-      enabled: false, 
+      enabled: false,
       path: '/ssr-redis-cache',
       cors: true,
-    }
+    },
   }
 
   return Object.assign({}, defaultOptions, moduleOptions)
 }
 
 function isCacheable(url, paths = [], cacheControl = null) {
-  return cacheControl !== 'no-cache' && paths.some((path) => (path instanceof RegExp ? path.test(url) : url.startsWith(path)))
+  return (
+    cacheControl !== 'no-cache' && (!paths.length || paths.some((path) => (path instanceof RegExp ? path.test(url) : url.startsWith(path))))
+  )
 }
 
 module.exports.meta = require('../package.json')
