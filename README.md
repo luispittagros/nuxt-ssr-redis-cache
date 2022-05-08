@@ -1,8 +1,8 @@
-# Nuxt SSR Redis Cache
+<h1 align="center"> Nuxt SSR Redis Cache</h1>
 
-:rocket: Blazing Fast Nuxt Server Side Rendering using Redis. 
+<p align="center">:rocket: Blazing Fast Nuxt Server Side Rendering using Redis. </p>
 
-Easily improves you Nuxt application performance.
+<p align="center">:heart: Easily improve your NuxtJS application performance.</p>
 
 ## Setup
 
@@ -74,9 +74,11 @@ To call the endpoint you must make a POST request to your Nuxt appplication usin
 
 ```json
 {
-   "paths" : [ "/", "/example/" ] // Use "*" as path to delete all cached pages
+   "paths" : [ "/", "/example/" ]
 }
 ```
+
+Use "*" as path to delete all cached pages.
 
 For the CORS options check the express cors middleware options [here](https://expressjs.com/en/resources/middleware/cors.html).
 
