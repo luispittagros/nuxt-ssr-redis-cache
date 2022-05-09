@@ -53,7 +53,7 @@ or
       password: null,
     },
     paths: [/^\/$/, '/articles/'], // If empty or "/" is set all pages will be cached
-    ttl: 60 * 60, // 1 minute
+    ttl: 60 * 60, // 1 hour
     cacheCleanEndpoint: {
       enabled: true, 
       path: '/ssr-redis-cache',
