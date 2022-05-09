@@ -8,8 +8,6 @@ export default async function nuxtRedisCache(moduleOptions) {
 
   const client = createClient(options.client)
 
-  const cachedHeader = options.cachedHeader === undefined ? 'X-Cache' : options.cachedHeader
-
   client.on('error', function (error) {
     console.log('\n\x1b[31m%s\x1b[0m', '[Nuxt SSR Redis Cache]: Error: ' + error)
   })
@@ -39,8 +37,8 @@ export default async function nuxtRedisCache(moduleOptions) {
     }
 
     console.log(
-      '[Nuxt SSR Redis Cache]:',
-      'Cache clean endpoint is ' + (isCacheCleanEndpointEnabled ? 'enabled\x1b[32m ✔' : 'disabled\x1b[31m ✘') + '\n',
+        '[Nuxt SSR Redis Cache]:',
+        'Cache clean endpoint is ' + (isCacheCleanEndpointEnabled ? 'enabled\x1b[32m ✔' : 'disabled\x1b[31m ✘') + '\n',
     )
   })
 
@@ -100,7 +98,6 @@ function buildOptions(moduleOptions) {
     },
     ttl: 60 * 60,
     paths: [],
-    cachedHeader:
     cacheCleanEndpoint: {
       enabled: false,
       path: '/ssr-redis-cache',
@@ -113,8 +110,8 @@ function buildOptions(moduleOptions) {
 
 function isCacheable(url, paths = [], cacheControl = null) {
   return (
-    cacheControl !== 'no-cache' && cacheControl !== 'no-store' 
-    && (!paths.length || paths.some((path) => (path instanceof RegExp ? path.test(url) : url.startsWith(path))))
+      cacheControl !== 'no-cache' && cacheControl !== 'no-store'
+      && (!paths.length || paths.some((path) => (path instanceof RegExp ? path.test(url) : url.startsWith(path))))
   )
 }
 
