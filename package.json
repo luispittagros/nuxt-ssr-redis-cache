@@ -1,6 +1,6 @@
 {
   "name": "@luispittagros/nuxt-ssr-redis-cache",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Blazing Fast SSR page renderings using Redis.",
   "main": "src/cache.js",
   "author": "Luís Pitta Grós",

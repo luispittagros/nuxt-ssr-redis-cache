@@ -61,24 +61,18 @@ export default async function nuxtRedisCache(moduleOptions) {
 
       context.req.hitCache = !!value
 
+      context.res.setHeader('X-Cache', value ? 'HIT' : 'MISS')
+
       if (!value) {
         return renderRoute(route, context)
       }
 
-      return new Promise(function (resolve) {
-        resolve(deserialize(value))
-      })
+      return new Promise((resolve) => resolve(deserialize(value)))
     }
   })
 
   this.nuxt.hook('render:route', async (url, result, context) => {
-    const hitCache = context.req.hitCache
-
-    if (hitCache !== undefined) {
-      context.res.setHeader('X-Cache', hitCache ? 'HIT' : 'MISS')
-    }
-
-    if (!hitCache && isCacheable(url, options.paths, context.req.headers['cache-control'])) {
+    if (!context.req.hitCache && isCacheable(url, options.paths, context.req.headers['cache-control'])) {
       client.set('nuxt/route::' + url, serialize(result), {
         EX: options.ttl,
       })
