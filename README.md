@@ -64,11 +64,11 @@ Alternatively, you can set it up as follows:
   },
 ```
 
-##### Redis Client Configuration
+### Redis Client Configuration
 
 For the client configuration, please refer to the comprehensive guide provided by `node-redis`. You can find this reference [here](https://github.com/redis/node-redis/blob/master/docs/client-configuration.md).
 
-##### Cache Clean Endpoint
+### Cache Clean Endpoint
 
 We provide an endpoint to clear cached paths. This is especially useful if your content changes frequently and needs to be updated on a regular basis.
 
